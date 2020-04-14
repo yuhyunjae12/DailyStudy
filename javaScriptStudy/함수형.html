@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2. 함수형으로 전환하기</title>
+</head>
+<body>
+
+<script>
+var users = [
+  { id: 1, name: 'ID', age: 36 },
+  { id: 2, name: 'BJ', age: 32 },
+  { id: 3, name: 'JM', age: 32 },
+  { id: 4, name: 'PJ', age: 27 },
+  { id: 5, name: 'HA', age: 25 },
+  { id: 6, name: 'JE', age: 26 },
+  { id: 7, name: 'JI', age: 31 },
+  { id: 8, name: 'MP', age: 23 }
+];
+
+// 1. 명령형 코드
+  // 1. 30세 이상인 users를 거른다.
+var temp_users = [];
+for (var i = 0; i < users.length; i++) {
+  if (users[i].age >= 30) {
+    temp_users.push(users[i]);
+  }
+}
+console.log(temp_users);
+
+  // 2. 30세 이상인 users의 names를 수집한다.
+var names = [];
+for (var i = 0; i < temp_users.length; i++) {
+  names.push(temp_users[i].name);
+}
+console.log(names);
+
+  // 3. 30세 미만인 users를 거른다.
+var temp_users = [];
+for (var i = 0; i < users.length; i++) {
+  if (users[i].age < 30) {
+    temp_users.push(users[i]);
+  }
+}
+console.log(temp_users);
+
+  // 4. 30세 미만인 users의 ages를 수집한다.
+var ages = [];
+for (var i = 0; i < temp_users.length; i++) {
+  ages.push(temp_users[i].age);
+}
+console.log(ages);
+
+function _filter(arr, fn){
+    let newArr=[];
+    for(let i=0; i< arr.length; i++){
+        if(fn(arr[i])){
+            newArr.push(arr[i])
+        }
+    }
+    return newArr
+}
+
+const age = _filter(users, function (val){return val.age > 30});
+
+console.log(age)
+
+function _map(arr, fn){
+    let newArr = [];
+    for(let i =0; i< arr.length; i++){
+        newArr.push(fn(arr[i]));
+    }
+    return newArr;
+}
+
+const name = _map(age, function(val){return val.name})
+console.log(name)
+
+
+console.log(
+    _map(
+        _filter(users, function (val) { return val.age < 30}),
+        function (val){return val.name}
+    )
+)
+
+const arr1 = [1,2,3,4,5].map(function(val){return val + 1})
+console.log(arr1)
+
+const arr2 = [1,2,3,4,5].filter(function(val){return val % 2})
+console.log(arr2)
+
+// 커링
+function _curry(fn){
+    return function ( a , b ){
+        return arguments.length == 2? fn(a,b): function(b){return fn(a,b)}
+    }
+}
+
+function _curryr(fn){
+    return function ( a , b ){
+        return arguments.length == 2? fn(a,b): function(b){return fn(b,a)}
+    }
+}
+
+let arr3 = _curry(function(a,b){return a+b});
+console.log(arr3(3));
+console.log(arr3(3)(2))
+
+let _get = _curryr(function(obj, key) {
+  return obj == null ? undefined : obj[key];
+});
+
+console.log(
+    _map(
+        _filter(users, function(val){return val.age < 30}),
+        _get('name')
+    )
+)
+
+const user1 = users[1];
+console.log(_get('name')(user1))
+
+function _reduce(arr, iter, memo){
+    if (arguments.length == 2) {
+        memo = arr[0];
+    }
+    for(let i =0; i < arr.length; i++){
+        memo = iter(memo, arr[i])
+    }
+    return memo
+}
+
+console.log(_reduce([1,2,3,4],arr3, 0))
+console.log(_reduce([1,2,3,4],arr3, 10))
+console.log(_reduce([1,2,3,4],arr3))
+</script>
+
+</body>
+</html>
